@@ -445,3 +445,136 @@ if __name__ == '__main__':
         fig_name = 'cl_ref_traj.png'
         fig_path = os.path.join(fig_dir, fig_name)
         plt.savefig(fig_path)
+
+
+    ########################################
+    # generate figures to put in the paper
+    ########################################
+    if plot_options['view_training_result']:
+        epoch_num = [30, 120, 240, 270, 300]
+
+        fig, axs = plt.subplots(2, 3, figsize=(30, 18))
+        vmin, vmax = u_min.cpu().item(), u_max.cpu().item()
+        for i in range(6):
+            if i == 0:
+                checkpoint_path = os.path.join(os.path.dirname(result_path), 'checkpoint_init.p')
+                epoch = -1
+            else:
+                epoch = epoch_num[i-1] - 1
+                checkpoint_path = os.path.join(os.path.dirname(result_path), 'checkpoint_{}.p'.format(epoch))
+
+            # test loading the saved cbf
+            saved_nn = torch.load(checkpoint_path)
+            hocbf.load_state_dict(saved_nn['hocbf'])
+
+            # state and input domain
+            view_x_min = aug_x_min
+            view_x_max = aug_x_max
+
+            view_domain = HyperRectangle(view_x_min, view_x_max)
+
+            grid_samples = view_domain.grid_sample_from_domain(30)
+            grid_samples.requires_grad_(True)
+
+            ax = axs[i//3,i%3]
+
+            plot_env(ax)
+
+            sc, avg_radius = cbf_evaluation_plot(ax, hocbf, grid_samples, u_min, u_max, vmin=None, vmax=None)
+
+            ax.tick_params(axis='x', labelsize=26)  # Change font size of x-axis ticks
+            ax.tick_params(axis='y', labelsize=26)  # Change font size of y-axis ticks
+
+            # ax.set_title(f'epoch {epoch+1}, avg. radius: {avg_radius:.2f}', fontsize=20)
+            ax.set_title(f'epoch {epoch+1}', fontsize=34)
+
+            cbar = fig.colorbar(sc, ax=ax)
+            cbar.ax.tick_params(labelsize=26)
+
+            # plot level set
+            N_dim = 200
+            x_grid = torch.linspace(view_x_min[0], view_x_max[0], 200)
+            y_grid = torch.linspace(view_x_min[1], view_x_max[1], 200)
+            X, Y = torch.meshgrid(x_grid, y_grid)
+
+            # Step 3: Evaluate the function
+            z_input = torch.cat((X.reshape(-1, 1), Y.reshape(-1, 1)), dim=-1)
+            z_input.requires_grad_(True)
+            Z,_, _ = hocbf(z_input)
+            Z = Z.reshape(N_dim, N_dim)
+
+            # Convert from PyTorch tensor to NumPy array for plotting
+            X_np = X.detach().cpu().numpy()
+            Y_np = Y.detach().cpu().numpy()
+            Z_np = Z.detach().cpu().numpy()
+
+            ax.contour(X_np, Y_np, Z_np, levels=[0.0], colors='green', linewidths=3)
+
+        fig_name = 'training_results.png'
+
+        for i in range(2):
+            for j in range(3):
+                # Set x labels only for the bottom row
+                if i == 1:
+                    axs[i, j].set_xlabel(r'$p$', fontsize=34)
+
+                # Set y labels only for the left-most column
+                if j == 0:
+                    axs[i, j].set_ylabel(r'$v$', fontsize=34)
+
+        fig.tight_layout()
+
+        fig_path = os.path.join(fig_dir, fig_name)
+        plt.savefig(fig_path)
+
+        ################ plot the final result ################
+        fig, ax = plt.subplots(1, 1, figsize=(10, 9))
+        checkpoint_path = os.path.join(os.path.dirname(result_path), 'result.p')
+
+        # test loading the saved cbf
+        saved_nn = torch.load(checkpoint_path)
+        hocbf.load_state_dict(saved_nn['hocbf'])
+
+        plot_env(ax)
+
+        # state and input domain
+        view_x_min = aug_x_min
+        view_x_max = aug_x_max
+
+        view_domain = HyperRectangle(view_x_min, view_x_max)
+
+        grid_samples = view_domain.grid_sample_from_domain(30)
+        grid_samples.requires_grad_(True)
+
+        sc, avg_radius = cbf_evaluation_plot(ax, hocbf, grid_samples, u_min, u_max, vmin=None, vmax=None)
+
+        ax.tick_params(axis='x', labelsize=26)  # Change font size of x-axis ticks
+        ax.tick_params(axis='y', labelsize=26)  # Change font size of y-axis ticks
+
+        cbar = fig.colorbar(sc, ax=ax)
+        cbar.ax.tick_params(labelsize=26)
+
+        # plot level set
+        N_dim = 200
+        x_grid = torch.linspace(view_x_min[0], view_x_max[0], 200)
+        y_grid = torch.linspace(view_x_min[1], view_x_max[1], 200)
+        X, Y = torch.meshgrid(x_grid, y_grid)
+
+        z_input = torch.cat((X.reshape(-1, 1), Y.reshape(-1, 1)), dim=-1)
+        z_input.requires_grad_(True)
+        Z, _, _ = hocbf(z_input)
+        Z = Z.reshape(N_dim, N_dim)
+
+        # Convert from PyTorch tensor to NumPy array for plotting
+        X_np = X.detach().cpu().numpy()
+        Y_np = Y.detach().cpu().numpy()
+        Z_np = Z.detach().cpu().numpy()
+
+        ax.contour(X_np, Y_np, Z_np, levels=[0.0], colors='green', linewidths=3)
+        ax.set_xlabel(r'$p$', fontsize=34)
+        ax.set_ylabel(r'$v$', fontsize=34)
+
+        fig_name = 'final_result.png'
+        fig.tight_layout()
+        fig_path = os.path.join(fig_dir, fig_name)
+        plt.savefig(fig_path)
