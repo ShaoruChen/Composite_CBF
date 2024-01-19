@@ -1,0 +1,4 @@
+torchdiffeq
+numpy
+matplotlib
+gurobipy

@@ -1,8 +1,11 @@
-Learning a NN control barrier function that handles the following challenges holistically:
+# composite-CBF
+Synthesize CBFs for complex safe sets
 
-1. Complex safety specification
-2. High relative degree
-3. Bounded input constraints
-4. Volume maximization
+```
+conda create --name composite_cbf python==3.7.13
+conda activate composite_cbf
 
-Codes to be uploaded. 
+conda install pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 -c pytorch
+
+pip install -r requirements.txt
+```
