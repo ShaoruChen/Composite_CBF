@@ -5,6 +5,16 @@ This repository implements codes to learn a neural network control barrier funct
 Shaoru Chen, Mahyar Fazlyab
 (Submitted to L4DC 2024)
 
+## Introduction
+For a control-affine system $\dot{x} = f(x) + g(x) u$, a CBF gives rise to a numerically efficient online safety filter, CBF-QP, that has found wide applications in robotic systems. However, the offline synthesis of CBF has been a long-standing challenge. `Composite-CBF` attempts to fully automate the CBF design by learning a neural network CBF that addresses the following practical concerns:
+
+1. **Complex Safety Constraints**: The safe set for a system can be given by Boolean logical operation on multiple constraints.
+2. **High Relative Degree**: The safety constraints are often defined on a subset of states that are not directly actuated and cannot be used as CBF
+3. **Bounded Actuation**: There is always actuation limit for every system. Taking bounded actuation into account significantly complicates CBF design. 
+4. **Volume Maximization**: We want to find a CBF that approximates the maximal control invariant set contained in the safe region. 
+
+`Composite-CBF` takes all above challenges into account through (i) a novel NN CBF parameterization and (ii) a two-phase learning algorithm based on [Hamilton-Jacobi reachability analysis](https://arxiv.org/abs/1709.07523). 
+
 ## Installation
 The following conda environment can be created to run the codes. 
 
