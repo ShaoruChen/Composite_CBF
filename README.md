@@ -15,6 +15,13 @@ For a control-affine system $\dot{x} = f(x) + g(x) u$, a CBF gives rise to a num
 
 `Composite-CBF` takes all above challenges into account through (i) a novel NN CBF parameterization and (ii) a two-phase learning algorithm based on [Hamilton-Jacobi reachability analysis](https://arxiv.org/abs/1709.07523). 
 
+### Example: Double Integrator with Splitted Safety Regions
+
+For a double integrator system, the safe region in the state space of (position, velocity) or $(p, v)$ is separated into two disconnected parts. `Composite-CBF` is able to learn a NN CBF $h(x)$ whose $0$-superlevel set (green curve) approximates the maximal control invariant set in each separate safe regions. The feasibility of the CBF condition is evaluated at the sampled states with infeasible points labeled as white squares. At states where the CBF-QP is feasible, the Chebyshev radius of the safe control set $\lbrace u \mid -1 \leq u \leq 1, \frac{\partial h}{\partial x} (f(x) + g(x) u ) + \gamma h(x) \geq 0 \rbrace$ (with minimum value $0$ and maximum value $1$ in this example) is denoted by the heatmap. 
+
+<img src="https://github.com/ShaoruChen/web-materials/blob/main/L4DC_composite_CBF/final_result.png" width=400, height=360> 
+
+
 ## Installation
 The following conda environment can be created to run the codes. 
 
