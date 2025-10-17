@@ -1,9 +1,11 @@
 # Composite-CBF
 This repository implements codes to learn a neural network control barrier function (CBF) that satisfies complex safety constraints, e.g., constraints composited by logical operations. Actuation limits are considered and the CBF is trained to approximate the maximal control invariant set inside the safe region. The details of this learning method are reported in the following paper:
 
-[Learning Performance-Oriented Control Barrier Functions Under Complex Safety Constraints and Limited Actuation](https://arxiv.org/abs/2401.05629) \
-Shaoru Chen, Mahyar Fazlyab
-(Submitted to L4DC 2024)
+[Learning Performance-oriented Control Barrier
+Functions Under Complex Safety Constraints and
+Limited Actuation](https://arxiv.org/abs/2401.05629) \
+Lakshmideepakreddy Manda, Shaoru Chen, Mahyar Fazlyab \
+Conference on Robot Learning (CoRL), 2024
 
 ## Introduction
 For a control-affine system $\dot{x} = f(x) + g(x) u$, a CBF gives rise to a numerically efficient online safety filter, CBF-QP, that has found wide applications in robotic systems. However, the offline synthesis of CBF has been a long-standing challenge. `Composite-CBF` attempts to fully automate the CBF design by learning a neural network CBF that addresses the following practical concerns:
